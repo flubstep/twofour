@@ -18,6 +18,7 @@ let {Dimensions, BaseStyles, Colors} = require('Constants');
 let Actions = require('Actions');
 
 let NumberCard = require('NumberCard');
+let NumberCardBackground = require('NumberCardBackground');
 
 
 class TwoFourScreen extends React.Component {
@@ -101,7 +102,17 @@ class TwoFourScreen extends React.Component {
   render() {
     if (this.state.cards) {
       return (
-        <View>
+        <View style={{backgroundColor: 'white'}}>
+          <View style={styles.container}>
+            <View style={[styles.row, BaseStyles.transparentBackground]}>
+              <NumberCardBackground />
+              <NumberCardBackground />
+            </View>
+            <View style={[styles.row, BaseStyles.transparentBackground]}>
+              <NumberCardBackground />
+              <NumberCardBackground />
+            </View>
+          </View>
           <View style={styles.container}>
             <View style={[styles.row, BaseStyles.transparentBackground]}>
               {this.renderCard(this.state.cards[0])}
@@ -111,18 +122,6 @@ class TwoFourScreen extends React.Component {
               {this.renderCard(this.state.cards[2])}
               {this.renderCard(this.state.cards[3])}
             </View>
-          </View>
-          <View style={[
-            BaseStyles.centerContent,
-            BaseStyles.transparentBackground,
-            {
-              position: 'absolute',
-              top: 0,
-              left: 0
-            },
-            ]}
-            >
-            <Text style={[BaseStyles.largeText]}>Drag the boxes around</Text>
           </View>
         </View>
       );
@@ -140,12 +139,15 @@ class TwoFourScreen extends React.Component {
 let styles = StyleSheet.create({
 
   container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
     height: Dimensions.windowHeight,
     width: Dimensions.windowWidth,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.white
+    backgroundColor: 'rgba(0,0,0,0.0)'
   },
 
   row: {

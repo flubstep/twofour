@@ -17,12 +17,22 @@ let Actions = require('Actions');
 let {Dimensions, BaseStyles, Colors} = require('Constants');
 
 
+function value(cardState) {
+  if (!cardState) {
+    return 0;
+  } else {
+    return cardState.number + value(cardState.combinedFrom);
+  }
+}
+
+
 class NumberCard extends React.Component {
 
   constructor(props, context) {
     super(props, context);
     this.state = {
-      scale: new Animated.Value(this.props.combinedTo ? 0.0 : 1.0),
+      scale: new Animated.Value(1.0),
+      opacity: new Animated.Value(this.props.combinedTo ? 0.1 : 1.0),
       positionOffset: new Animated.ValueXY(0, 0)
     };
     this.responder = PanResponder.create({
@@ -36,8 +46,16 @@ class NumberCard extends React.Component {
     });
   }
 
+  isVisible() {
+    return !this.props.combinedTo;
+  }
+
+  value() {
+    return value(this.props);
+  }
+
   panHandlers() {
-    if (this.props.combinedTo) {
+    if (!this.isVisible()) {
       return {};
     } else {
       return this.responder.panHandlers;
@@ -54,12 +72,25 @@ class NumberCard extends React.Component {
 
   animatePosition(toPosition) {
     if (toPosition) {
-
+      let {posX, posY} = toPosition;
+      return Animated.spring(this.state.positionOffset, {
+        toValue: {
+          x: posX - this.props.posX,
+          y: posY - this.props.posY
+        }
+      });
     } else {
       return Animated.spring(this.state.positionOffset, {
         toValue: {x: 0, y: 0}
       });
     }
+  }
+
+  animateOpacity(opacity) {
+    return Animated.timing(this.state.opacity, {
+      toValue: opacity,
+      duration: 200
+    });
   }
 
   componentDidUpdate(prevProps) {
@@ -84,9 +115,14 @@ class NumberCard extends React.Component {
     }
     // drag -> release, combine
     else if (!this.props.isDragging && prevProps.isDragging && this.props.combinedTo) {
-      Animated.parallel([
-        this.animateScale(0.0)
-      ]).start();
+      Animated.sequence([
+        Animated.parallel([
+          this.animateScale(1.0),
+          this.animateOpacity(0.0),
+          this.animatePosition(this.props.combinedTo)
+        ]),
+        this.animatePosition(0) // TODO: actually move the object backwards in z-index
+      ]).start()
     }
   }
 
@@ -98,10 +134,16 @@ class NumberCard extends React.Component {
   }
 
   onPanResponderGrant(evt, gestureState) {
+    if (!this.isVisible()) {
+      return;
+    }
     this.props.onPress(evt);
   }
 
   onPanResponderMove(evt, gestureState) {
+    if (!this.isVisible()) {
+      return;
+    }
     let {dx, dy, moveX, moveY} = gestureState;
     this.state.positionOffset.setValue({
       x: dx,
@@ -111,6 +153,9 @@ class NumberCard extends React.Component {
   }
 
   onPanResponderRelease(evt, gestureState) {
+    if (!this.isVisible()) {
+      return;
+    }
     this.props.onRelease(evt);
   }
 
@@ -120,6 +165,9 @@ class NumberCard extends React.Component {
         {...this.panHandlers()}
         style={[
           BaseStyles.transparentBackground,
+          {
+            opacity: this.state.opacity
+          },
           {
             transform: [
               {scale: this.state.scale},
@@ -138,7 +186,7 @@ class NumberCard extends React.Component {
           ref="card"
           >
           <Text style={BaseStyles.hugeText}>
-            {this.props.number}
+            {this.props.combinedTo ? '' : this.value()}
           </Text>
         </View>
       </Animated.View>
