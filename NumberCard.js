@@ -16,6 +16,7 @@ let {
 let Actions = require('Actions');
 let {Dimensions, BaseStyles, Colors} = require('Constants');
 
+
 class NumberCard extends React.Component {
 
   constructor(props, context) {
@@ -35,6 +36,22 @@ class NumberCard extends React.Component {
     });
   }
 
+  animateScale(scale) {
+    return Animated.spring(this.state.scale, {
+      toValue: scale,
+      tension: 150,
+      friction: 10
+    })
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.isHover && !prevProps.isHover) {
+      this.animateScale(1.1).start();
+    } else if (!this.props.isHover && prevProps.isHover) {
+      this.animateScale(1.0).start();
+    }
+  }
+
   onLayout() {
     let id = this.props.id;
     this.refs.card.measure((fx, fy, width, height, posX, posY) => {
@@ -43,12 +60,7 @@ class NumberCard extends React.Component {
   }
 
   onPanResponderGrant(evt, gestureState) {
-
-    Animated.spring(this.state.scale, {
-      toValue: 0.95,
-      tension: 150,
-      friction: 5
-    }).start();
+    this.animateScale(0.9).start();
     this.props.onPress(evt);
   }
 
@@ -66,11 +78,7 @@ class NumberCard extends React.Component {
       Animated.spring(this.state.positionOffset, {
         toValue: {x: 0, y: 0}
       }),
-      Animated.spring(this.state.scale, {
-        toValue: 1.0,
-        tension: 150,
-        friction: 5
-      })
+      this.animateScale(1.0)
     ]).start();
     this.props.onRelease(evt);
   }
@@ -93,7 +101,8 @@ class NumberCard extends React.Component {
         <View style={[
             BaseStyles.centerContent,
             styles.card,
-            (this.props.isHover || this.props.isDragging) ? styles.cardActive : styles.cardInactive
+            this.props.isHover ? styles.hover : null,
+            this.props.isDragging ? styles.dragging : null
           ]}
           ref="card"
           >
@@ -113,21 +122,17 @@ let styles = StyleSheet.create({
     height: Dimensions.cardSide,
     width: Dimensions.cardSide,
     backgroundColor: Colors.midBackground,
-    borderRadius: 8
-  },
-  cardActive: {
+    borderRadius: 8,
     shadowOffset: {left: 0, bottom: 0},
-    shadowColor: 'black',
-    shadowOpacity: 0.8,
-    shadowRadius: 8
-  },
-  cardInactive: {
-    shadowOffset: {left: 0, bottom: 0},
-    shadowColor: 'black',
     shadowOpacity: 0.4,
     shadowRadius: 4
+  },
+  dragging: {
+    shadowRadius: 2,
+  },
+  hover: {
+    shadowRadius: 8
   }
-
 });
 
 module.exports = NumberCard;
