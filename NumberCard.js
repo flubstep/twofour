@@ -19,9 +19,8 @@ let {Dimensions, BaseStyles, Colors} = require('Constants');
 class NumberCard extends React.Component {
 
   constructor(props, context) {
-    super(props, context)
+    super(props, context);
     this.state = {
-      shadowProperties: styles.cardInactive,
       scale: new Animated.Value(1.0),
       positionOffset: new Animated.ValueXY(0, 0)
     };
@@ -37,40 +36,32 @@ class NumberCard extends React.Component {
   }
 
   onLayout() {
+    let id = this.props.id;
     this.refs.card.measure((fx, fy, width, height, posX, posY) => {
-      Actions.registerCardPosition(
-        this.props.number, // TODO: a real id
-        posX,
-        posY,
-        height,
-        width
-      );
+      Actions.registerCardPosition({id, posX, posY, height, width});
     });
   }
 
   onPanResponderGrant(evt, gestureState) {
-    this.setState({
-      shadowProperties: styles.cardActive
-    });
+
     Animated.spring(this.state.scale, {
       toValue: 0.95,
       tension: 150,
       friction: 5
     }).start();
+    this.props.onPress(evt);
   }
 
   onPanResponderMove(evt, gestureState) {
-    let {dx, dy} = gestureState;
+    let {dx, dy, moveX, moveY} = gestureState;
     this.state.positionOffset.setValue({
       x: dx,
       y: dy
     });
+    this.props.onMove({moveX, moveY});
   }
 
-  onPanResponderRelease() {
-    this.setState({
-      shadowProperties: styles.cardInactive
-    });
+  onPanResponderRelease(evt, gestureState) {
     Animated.parallel([
       Animated.spring(this.state.positionOffset, {
         toValue: {x: 0, y: 0}
@@ -81,6 +72,7 @@ class NumberCard extends React.Component {
         friction: 5
       })
     ]).start();
+    this.props.onRelease(evt);
   }
 
   render() {
@@ -101,7 +93,7 @@ class NumberCard extends React.Component {
         <View style={[
             BaseStyles.centerContent,
             styles.card,
-            this.state.shadowProperties
+            (this.props.isHover || this.props.isDragging) ? styles.cardActive : styles.cardInactive
           ]}
           ref="card"
           >

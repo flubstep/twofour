@@ -25,6 +25,7 @@ class TwoFourScreen extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
+      cards: null,
       iterations: 0
     };
   }
@@ -34,6 +35,7 @@ class TwoFourScreen extends React.Component {
       console.log('game state', gameState);
       this.setState(gameState);
     });
+    this.createCards();
     this.setInterval(this.onTick, 1000);
   }
 
@@ -41,19 +43,82 @@ class TwoFourScreen extends React.Component {
 
   }
 
-  render() {
+  onCardMove(evt, card) {
+    this.calculateHover(evt.moveX, evt.moveY);
+  }
+
+  onCardRelease(evt, card) {
+    Actions.releaseCard({id: card.id});
+  }
+
+  onCardPress(evt, card) {
+    Actions.dragCard({id: card.id});
+  }
+
+  calculateHover(hoverX, hoverY) {
+    this.state.cards.map((card) => {
+      let inVertical = (card.posX < hoverX) && (hoverX < card.posX + card.height);
+      let inHorizontal = (card.posY < hoverY) && (hoverY < card.posY + card.width);
+      if (!card.isHover && !card.isDragging && inVertical && inHorizontal) {
+        Actions.hoverCard({id: card.id});
+      } else if (card.isHover && !(inVertical && inHorizontal)) {
+        Actions.hoverCard({id: null});
+      }
+    });
+
+  }
+
+  createCards() {
+    let cards = [4, 5, 6, 7];
+    Actions.setCards({cards});
+  }
+
+  renderCard(card) {
     return (
-      <View style={styles.container}>
-        <View style={[styles.row, BaseStyles.transparentBackground]}>
-          <NumberCard number={4} />
-          <NumberCard number={5} />
-        </View>
-        <View style={[styles.row, BaseStyles.transparentBackground]}>
-          <NumberCard number={6} />
-          <NumberCard number={7} />
-        </View>
-      </View>
+      <NumberCard
+        onPress={(evt) => this.onCardPress(evt, card)}
+        onMove={(evt) => this.onCardMove(evt, card)}
+        onRelease={(evt) => this.onCardRelease(evt, card)}
+        {...card}
+      />
     );
+  }
+
+  render() {
+    if (this.state.cards) {
+      return (
+        <View>
+          <View style={styles.container}>
+            <View style={[styles.row, BaseStyles.transparentBackground]}>
+              {this.renderCard(this.state.cards[0])}
+              {this.renderCard(this.state.cards[1])}
+            </View>
+            <View style={[styles.row, BaseStyles.transparentBackground]}>
+              {this.renderCard(this.state.cards[2])}
+              {this.renderCard(this.state.cards[3])}
+            </View>
+          </View>
+          <View style={[
+            BaseStyles.centerContent,
+            BaseStyles.transparentBackground,
+            {
+              position: 'absolute',
+              top: 0,
+              left: 0
+            },
+            ]}
+            >
+            <Text style={[BaseStyles.largeText]}>Drag the boxes around</Text>
+          </View>
+        </View>
+      );
+    } else {
+      return (
+        <View>
+          <Text>Loading</Text>
+        </View>
+      );
+    }
   }
 
 }

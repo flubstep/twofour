@@ -21,19 +21,26 @@ function subscribe(callback) {
   });
 }
 
-function registerCardPosition(cardId, posX, posY, height, width) {
-  gameStore.dispatch({
-    type: 'REGISTER_CARD_POSITION',
-    cardId: cardId,
-    posX: posX,
-    posY: posY,
-    height: height,
-    width: width
-  })
+function createAction(type) {
+  return (args) => {
+    gameStore.dispatch({
+      type: type,
+      ...args
+    })
+  }
 }
 
+let setCards = createAction('SET_CARDS');
+let registerCardPosition = createAction('REGISTER_CARD_POSITION');
+let hoverCard = createAction('HOVER_CARD');
+let dragCard = createAction('DRAG_CARD');
+let releaseCard = createAction('RELEASE_CARD');
 
 module.exports = {
   subscribe,
+  setCards,
+  hoverCard,
+  dragCard,
+  releaseCard,
   registerCardPosition
 }
