@@ -21,6 +21,7 @@ class NumberCard extends React.Component {
     super(props, context)
     this.state = {
       shadowProperties: styles.cardInactive,
+      scale: new Animated.Value(1.0),
       positionOffset: new Animated.ValueXY(0, 0)
     };
     this.responder = PanResponder.create({
@@ -34,6 +35,17 @@ class NumberCard extends React.Component {
     });
   }
 
+  onPanResponderGrant(evt, gestureState) {
+    this.setState({
+      shadowProperties: styles.cardActive
+    });
+    Animated.spring(this.state.scale, {
+      toValue: 0.95,
+      tension: 150,
+      friction: 5
+    }).start();
+  }
+
   onPanResponderMove(evt, gestureState) {
     let {dx, dy} = gestureState;
     this.state.positionOffset.setValue({
@@ -42,19 +54,20 @@ class NumberCard extends React.Component {
     });
   }
 
-  onPanResponderGrant(evt, gestureState) {
-    this.setState({
-      shadowProperties: styles.cardActive
-    });
-  }
-
   onPanResponderRelease() {
     this.setState({
       shadowProperties: styles.cardInactive
     });
-    Animated.spring(this.state.positionOffset, {
-      toValue: {x: 0, y: 0}
-    }).start();
+    Animated.parallel([
+      Animated.spring(this.state.positionOffset, {
+        toValue: {x: 0, y: 0}
+      }),
+      Animated.spring(this.state.scale, {
+        toValue: 1.0,
+        tension: 150,
+        friction: 5
+      })
+    ]).start();
   }
 
   render() {
@@ -64,7 +77,10 @@ class NumberCard extends React.Component {
         style={[
           BaseStyles.transparentBackground,
           {
-            transform: [...this.state.positionOffset.getTranslateTransform()]
+            transform: [
+              {scale: this.state.scale},
+              ...this.state.positionOffset.getTranslateTransform()
+            ]
           }
         ]}
         >
