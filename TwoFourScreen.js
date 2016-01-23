@@ -31,15 +31,14 @@ class TwoFourScreen extends React.Component {
 
   componentDidMount() {
     Actions.subscribe((gameState) => {
+      console.log('game state', gameState);
       this.setState(gameState);
     });
     this.setInterval(this.onTick, 1000);
   }
 
   onTick() {
-    this.setState({
-      iterations: this.state.iterations + 1
-    });
+
   }
 
   render() {
@@ -71,11 +70,11 @@ let styles = StyleSheet.create({
   },
 
   row: {
-    width: Dimensions.windowWidth,
+    width: Dimensions.windowWidth - Dimensions.baseMargin * 2,
     height: Dimensions.cardHeight,
     marginBottom: Dimensions.baseMargin,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'center'
   }
 

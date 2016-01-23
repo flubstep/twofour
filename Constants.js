@@ -28,7 +28,7 @@ const Constants = {
 
   Dimensions: {
     baseMargin: cardMargin,
-    cardSide: windowWidth/2 - cardMargin,
+    cardSide: (windowWidth - (cardMargin*3)) / 2,
     windowHeight: windowHeight,
     windowWidth: windowWidth
   },

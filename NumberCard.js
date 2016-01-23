@@ -13,6 +13,7 @@ let {
   PanResponder
 } = React;
 
+let Actions = require('Actions');
 let {Dimensions, BaseStyles, Colors} = require('Constants');
 
 class NumberCard extends React.Component {
@@ -32,6 +33,18 @@ class NumberCard extends React.Component {
       onPanResponderGrant: (evt, gestureState) => this.onPanResponderGrant(evt, gestureState),
       onPanResponderMove: (evt, gestureState) => this.onPanResponderMove(evt, gestureState),
       onPanResponderRelease: (evt, gestureState) => this.onPanResponderRelease(evt, gestureState)
+    });
+  }
+
+  onLayout() {
+    this.refs.card.measure((fx, fy, width, height, posX, posY) => {
+      Actions.registerCardPosition(
+        this.props.number, // TODO: a real id
+        posX,
+        posY,
+        height,
+        width
+      );
     });
   }
 
@@ -83,12 +96,14 @@ class NumberCard extends React.Component {
             ]
           }
         ]}
+        onLayout={(evt) => this.onLayout(evt)}
         >
         <View style={[
             BaseStyles.centerContent,
             styles.card,
             this.state.shadowProperties
           ]}
+          ref="card"
           >
           <Text style={BaseStyles.hugeText}>
             {this.props.number}
