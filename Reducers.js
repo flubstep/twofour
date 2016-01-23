@@ -5,6 +5,7 @@
 'use strict';
 
 let {uniqueId} = require('lodash');
+let Fractional = require('Fractional');
 
 let card = (state = {}, action) => {
 
@@ -13,7 +14,7 @@ let card = (state = {}, action) => {
     case 'ADD_CARD':
       return {
         id: action.id,
-        number: action.number,
+        number: new Fractional(action.number),
         isDragging: false,
         isHover: false,
         posX: 0,

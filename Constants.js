@@ -13,6 +13,9 @@ const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').width;
 const baseFont = 'Avenir';
 const cardMargin = 24;
+const cardSide = (windowWidth - (cardMargin*3)) / 2;
+const miniCardMargin = 4;
+const miniCardSide = (cardSide - (miniCardMargin*3)) / 2;
 
 
 const Colors = {
@@ -29,7 +32,8 @@ const Colors = {
 
 const AppDimensions = {
   baseMargin: cardMargin,
-  cardSide: (windowWidth - (cardMargin*3)) / 2,
+  cardSide: cardSide,
+  miniCardSide: miniCardSide,
   windowHeight: windowHeight,
   windowWidth: windowWidth
 };

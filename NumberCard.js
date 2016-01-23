@@ -51,7 +51,7 @@ class NumberCard extends React.Component {
   }
 
   value() {
-    return value(this.props);
+    return this.props.number.toString();
   }
 
   panHandlers() {
@@ -158,7 +158,43 @@ class NumberCard extends React.Component {
     this.props.onRelease(evt);
   }
 
+  renderSplitView() {
+    // TODO: move this out of here
+    let lhs = this.props.number;
+    let rhs = this.props.combinedFrom.number;
+
+    return (
+      <View style={{
+          height: Dimensions.cardSide,
+          width: Dimensions.cardSide,
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+        <View style={[styles2.row]}>
+          <View style={[BaseStyles.centerContent, styles2.miniCard]}>
+            <Text style={[BaseStyles.largeText]}>{rhs.add(lhs).toString()}</Text>
+          </View>
+          <View style={[BaseStyles.centerContent, styles2.miniCard]}>
+            <Text style={[BaseStyles.largeText]}>{rhs.subtract(lhs).toString()}</Text>
+          </View>
+        </View>
+        <View style={[styles2.row]}>
+          <View style={[BaseStyles.centerContent, styles2.miniCard]}>
+            <Text style={[BaseStyles.largeText]}>{rhs.multiply(lhs).toString()}</Text>
+          </View>
+          <View style={[BaseStyles.centerContent, styles2.miniCard]}>
+            <Text style={[BaseStyles.largeText]}>{rhs.divide(lhs).toString()}</Text>
+          </View>
+        </View>
+      </View>
+    );
+  }
+
   render() {
+    if (this.props.combinedFrom) {
+      return this.renderSplitView();
+    }
     return (
       <Animated.View
         {...this.panHandlers()}
@@ -211,6 +247,27 @@ let styles = StyleSheet.create({
   hover: {
     shadowRadius: 8
   }
+});
+
+let styles2 = StyleSheet.create({
+
+  miniCard: {
+    height: Dimensions.miniCardSide,
+    width: Dimensions.miniCardSide,
+    backgroundColor: Colors.midBackground,
+    borderRadius: 8,
+    shadowOffset: {left: 0, bottom: 0},
+    shadowOpacity: 0.4,
+    shadowRadius: 2
+  },
+  row: {
+    height: Dimensions.miniCardSide,
+    width: Dimensions.cardSide,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  }
+
 });
 
 module.exports = NumberCard;
