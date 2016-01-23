@@ -22,7 +22,8 @@ const Colors = {
   green: '#407F7F',
   white: '#FEFEFE',
   dark: '#333333',
-  red: 'red'
+  red: 'red',
+  transparent: 'rgba(0,0,0,0.0)'
 };
 
 
@@ -62,7 +63,7 @@ const BaseStyles = {
     justifyContent: 'center'
   },
   transparentBackground: {
-    backgroundColor: 'rgba(0, 0, 0, 0)'
+    backgroundColor: Colors.transparent
   }
 };
 
