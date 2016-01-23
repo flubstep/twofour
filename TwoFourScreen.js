@@ -43,19 +43,29 @@ class TwoFourScreen extends React.Component {
 
   }
 
-  onCardMove(evt, card) {
-    this.calculateHover(evt.moveX, evt.moveY);
+  combineCards(cardFrom, cardInto) {
+    console.log("combining cards ", cardFrom, cardInto);
   }
 
-  onCardRelease(evt, card) {
+  onCardMove(gestureState, card) {
+    this.calculateHover(gestureState.moveX, gestureState.moveY);
+  }
+
+  onCardRelease(gestureState, card) {
+    let hoveredCards = this.state.cards.filter((card) => card.isHover);
+    if (hoveredCards.length > 0) {
+      this.combineCards(card, hoveredCards[0]);
+    }
     Actions.releaseCard({id: card.id});
   }
 
-  onCardPress(evt, card) {
+  onCardPress(gestureState, card) {
     Actions.dragCard({id: card.id});
   }
 
   calculateHover(hoverX, hoverY) {
+    // Not very functional implementation, but need to do the Action
+    // dispatch here otherwise the performance crawls to a halt.
     this.state.cards.map((card) => {
       let inVertical = (card.posX < hoverX) && (hoverX < card.posX + card.height);
       let inHorizontal = (card.posY < hoverY) && (hoverY < card.posY + card.width);
@@ -76,9 +86,9 @@ class TwoFourScreen extends React.Component {
   renderCard(card) {
     return (
       <NumberCard
-        onPress={(evt) => this.onCardPress(evt, card)}
-        onMove={(evt) => this.onCardMove(evt, card)}
-        onRelease={(evt) => this.onCardRelease(evt, card)}
+        onPress={(gestureState) => this.onCardPress(gestureState, card)}
+        onMove={(gestureState) => this.onCardMove(gestureState, card)}
+        onRelease={(gestureState) => this.onCardRelease(gestureState, card)}
         {...card}
       />
     );
