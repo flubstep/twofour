@@ -45,6 +45,10 @@ class TwoFourScreen extends React.Component {
 
   combineCards(cardFrom, cardInto) {
     console.log("combining cards ", cardFrom, cardInto);
+    Actions.combineCards({
+      from: cardFrom,
+      to: cardInto
+    });
   }
 
   onCardMove(gestureState, card) {
@@ -69,7 +73,7 @@ class TwoFourScreen extends React.Component {
     this.state.cards.map((card) => {
       let inVertical = (card.posX < hoverX) && (hoverX < card.posX + card.height);
       let inHorizontal = (card.posY < hoverY) && (hoverY < card.posY + card.width);
-      if (!card.isHover && !card.isDragging && inVertical && inHorizontal) {
+      if (!card.isHover && !card.isDragging && !card.combinedTo && inVertical && inHorizontal) {
         Actions.hoverCard({id: card.id});
       } else if (card.isHover && !(inVertical && inHorizontal)) {
         Actions.hoverCard({id: null});

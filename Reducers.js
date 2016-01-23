@@ -48,7 +48,7 @@ let card = (state = {}, action) => {
       });
 
     case 'HOVER_CARD':
-      if (action.id === state.id) {
+      if (action.id === state.id && !state.combinedTo) {
         return Object.assign({}, state, {
           isHover: true
         });

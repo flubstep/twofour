@@ -36,6 +36,14 @@ class NumberCard extends React.Component {
     });
   }
 
+  panHandlers() {
+    if (this.props.combinedTo) {
+      return {};
+    } else {
+      return this.responder.panHandlers;
+    };
+  }
+
   animateScale(scale) {
     return Animated.spring(this.state.scale, {
       toValue: scale,
@@ -109,7 +117,7 @@ class NumberCard extends React.Component {
   render() {
     return (
       <Animated.View
-        {...this.responder.panHandlers}
+        {...this.panHandlers()}
         style={[
           BaseStyles.transparentBackground,
           {
