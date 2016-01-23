@@ -104,13 +104,12 @@ class NumberCard extends React.Component {
     }
     // start drag
     else if (this.props.isDragging && !prevProps.isDragging) {
-      this.animateScale(0.9).start();
+      // no-op
     }
     // drag -> release, no hover
     else if (!this.props.isDragging && prevProps.isDragging && !this.props.combinedTo) {
       Animated.parallel([
-        this.animatePosition(0),
-        this.animateScale(1.0)
+        this.animatePosition(0)
       ]).start();
     }
     // drag -> release, combine
@@ -207,7 +206,7 @@ let styles = StyleSheet.create({
     shadowRadius: 4
   },
   dragging: {
-    shadowRadius: 2,
+
   },
   hover: {
     shadowRadius: 8
