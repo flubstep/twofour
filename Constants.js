@@ -12,7 +12,7 @@ let {
 const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').width;
 const baseFont = 'Avenir';
-const cardMargin = 40;
+const cardMargin = 24;
 
 const Constants = {
 
