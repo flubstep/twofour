@@ -19,7 +19,9 @@ let card = (state = {}, action) => {
         posX: 0,
         posY: 0,
         height: 0,
-        width: 0
+        width: 0,
+        combinedTo: null,
+        combinedFrom: null
       }
 
     case 'REGISTER_CARD_POSITION':
@@ -54,6 +56,21 @@ let card = (state = {}, action) => {
         return Object.assign({}, state, {
           isHover: false
         });
+      } else {
+        return state;
+      }
+
+    case 'COMBINE_CARDS':
+      if (action.from.id === state.id) {
+        return Object.assign({}, state, {
+          combinedTo: action.to
+        });
+      } else if (action.to.id === state.id) {
+        return Object.assign({}, state, {
+          combinedFrom: action.from
+        });
+      } else {
+        return state;
       }
 
     default:
@@ -81,6 +98,7 @@ let cards = (state = [], action) => {
     case 'DRAG_CARD':
     case 'RELEASE_CARD':
     case 'HOVER_CARD':
+    case 'COMBINE_CARDS':
       return state.map((cardState) => card(cardState, action));
 
     default:

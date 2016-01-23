@@ -22,7 +22,7 @@ class NumberCard extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      scale: new Animated.Value(1.0),
+      scale: new Animated.Value(this.props.combinedTo ? 0.0 : 1.0),
       positionOffset: new Animated.ValueXY(0, 0)
     };
     this.responder = PanResponder.create({
@@ -41,14 +41,44 @@ class NumberCard extends React.Component {
       toValue: scale,
       tension: 150,
       friction: 10
-    })
+    });
+  }
+
+  animatePosition(toPosition) {
+    if (toPosition) {
+
+    } else {
+      return Animated.spring(this.state.positionOffset, {
+        toValue: {x: 0, y: 0}
+      });
+    }
   }
 
   componentDidUpdate(prevProps) {
+    // no hover -> hover
     if (this.props.isHover && !prevProps.isHover) {
       this.animateScale(1.1).start();
-    } else if (!this.props.isHover && prevProps.isHover) {
+    }
+    // hover -> no hover
+    else if (!this.props.isHover && prevProps.isHover) {
       this.animateScale(1.0).start();
+    }
+    // start drag
+    else if (this.props.isDragging && !prevProps.isDragging) {
+      this.animateScale(0.9).start();
+    }
+    // drag -> release, no hover
+    else if (!this.props.isDragging && prevProps.isDragging && !this.props.combinedTo) {
+      Animated.parallel([
+        this.animatePosition(0),
+        this.animateScale(1.0)
+      ]).start();
+    }
+    // drag -> release, combine
+    else if (!this.props.isDragging && prevProps.isDragging && this.props.combinedTo) {
+      Animated.parallel([
+        this.animateScale(0.0)
+      ]).start();
     }
   }
 
@@ -60,7 +90,6 @@ class NumberCard extends React.Component {
   }
 
   onPanResponderGrant(evt, gestureState) {
-    this.animateScale(0.9).start();
     this.props.onPress(evt);
   }
 
@@ -74,12 +103,6 @@ class NumberCard extends React.Component {
   }
 
   onPanResponderRelease(evt, gestureState) {
-    Animated.parallel([
-      Animated.spring(this.state.positionOffset, {
-        toValue: {x: 0, y: 0}
-      }),
-      this.animateScale(1.0)
-    ]).start();
     this.props.onRelease(evt);
   }
 
