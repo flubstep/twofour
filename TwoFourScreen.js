@@ -131,7 +131,7 @@ let styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.lightBackground
+    backgroundColor: Colors.white
   },
 
   row: {

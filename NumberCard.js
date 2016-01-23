@@ -112,13 +112,13 @@ let styles = StyleSheet.create({
   card: {
     height: Dimensions.cardSide,
     width: Dimensions.cardSide,
-    backgroundColor: 'white',
+    backgroundColor: Colors.midBackground,
     borderRadius: 8
   },
   cardActive: {
     shadowOffset: {left: 0, bottom: 0},
-    shadowColor: 'green',
-    shadowOpacity: 0.9,
+    shadowColor: 'black',
+    shadowOpacity: 0.8,
     shadowRadius: 8
   },
   cardInactive: {
