@@ -1,0 +1,14 @@
+{
+  "name": "TwoFour",
+  "version": "0.0.0",
+  "description": "TwentyFour Game",
+  "main": "main.js",
+  "author": "albert.sheu@gmail.com",
+  "dependencies": {
+    "react-native": "github:exponentjs/react-native#2016-01-02",
+    "react-timer-mixin": "^0.13.3",
+    "redux": "^3.0.4",
+    "lodash": "^3.10.1",
+    "react-mixin": "^3.0.3"
+  }
+}
