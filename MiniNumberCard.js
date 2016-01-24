@@ -1,5 +1,5 @@
 /**
- * @providesModule NumberCard
+ * @providesModule MiniNumberCard
  */
 
 'use strict';
@@ -16,8 +16,6 @@ let {
 let Actions = require('Actions');
 let {Dimensions, BaseStyles, Colors} = require('Constants');
 
-let MiniNumberCardGrid = require('MiniNumberCardGrid');
-
 
 function value(cardState) {
   if (!cardState) {
@@ -28,7 +26,7 @@ function value(cardState) {
 }
 
 
-class NumberCard extends React.Component {
+class MiniNumberCard extends React.Component {
 
   constructor(props, context) {
     super(props, context);
@@ -138,7 +136,7 @@ class NumberCard extends React.Component {
     if (!this.isVisible()) {
       return;
     }
-    this.props.onPress(evt);
+    //this.props.onPress(evt);
   }
 
   onPanResponderMove(evt, gestureState) {
@@ -150,84 +148,45 @@ class NumberCard extends React.Component {
       x: dx,
       y: dy
     });
-    this.props.onMove({moveX, moveY});
+    //this.props.onMove({moveX, moveY});
   }
 
   onPanResponderRelease(evt, gestureState) {
     if (!this.isVisible()) {
       return;
     }
-    this.props.onRelease(evt);
+    //this.props.onRelease(evt);
   }
 
-  renderSplitView() {
-    return (
-      <MiniNumberCardGrid
-        lhs={this.props.number}
-        rhs={this.props.combinedFrom.number}
-      />
-    );
+  borderStyle() {
+    if (this.props.top && this.props.left) { return {'borderTopLeftRadius': 8}; }
+    if (this.props.top && this.props.right) { return {'borderTopRightRadius': 8}; }
+    if (this.props.bottom && this.props.left) { return {'borderBottomLeftRadius': 8}; }
+    if (this.props.bottom && this.props.right) { return {'borderBottomRightRadius': 8}; }
+    return {};
   }
 
   render() {
-    if (this.props.combinedFrom) {
-      return this.renderSplitView();
-    }
     return (
-      <Animated.View
+      <View
+        style={[BaseStyles.centerContent, styles.miniCard, this.borderStyle()]}
         {...this.panHandlers()}
-        style={[
-          BaseStyles.transparentBackground,
-          {
-            opacity: this.state.opacity
-          },
-          {
-            transform: [
-              {scale: this.state.scale},
-              ...this.state.positionOffset.getTranslateTransform()
-            ]
-          }
-        ]}
-        onLayout={(evt) => this.onLayout(evt)}
         >
-        <View style={[
-            BaseStyles.centerContent,
-            styles.card,
-            this.props.isHover ? styles.hover : null,
-            this.props.isDragging ? styles.dragging : null
-          ]}
-          ref="card"
-          >
-          <Text style={BaseStyles.hugeText}>
-            {this.props.combinedTo ? '' : this.value()}
-          </Text>
-        </View>
-      </Animated.View>
+        <Text style={[BaseStyles.largeText]}>{this.props.number.toString()}</Text>
+      </View>
     );
   }
 
 }
 
+MiniNumberCard.defaultProps = {
+  top: false,
+  left: false,
+  bottom: false,
+  right: false
+};
+
 let styles = StyleSheet.create({
-
-  card: {
-    height: Dimensions.cardSide,
-    width: Dimensions.cardSide,
-    backgroundColor: Colors.midBackground,
-    borderRadius: 8,
-    shadowOffset: {left: 0, bottom: 0},
-    shadowOpacity: 0.4,
-    shadowRadius: 4
-  },
-  dragging: {
-
-  },
-  hover: {
-    shadowRadius: 8
-  }
-});
-
-let styles2 = StyleSheet.create({
 
   miniCard: {
     height: Dimensions.miniCardSide,
@@ -236,15 +195,8 @@ let styles2 = StyleSheet.create({
     shadowOffset: {left: 0, bottom: 0},
     shadowOpacity: 0.4,
     shadowRadius: 2
-  },
-  row: {
-    height: Dimensions.miniCardSide,
-    width: Dimensions.cardSide,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between'
   }
 
 });
 
-module.exports = NumberCard;
+module.exports = MiniNumberCard;
