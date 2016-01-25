@@ -40,9 +40,7 @@ let card = (state = {}, action) => {
     case 'DRAG_CARD':
       return Object.assign({}, state, {
         isDragging: (action.id === state.id),
-        // this is separate because when the card is let go, isDragging is
-        // false but it still needs to be on top
-        isTopCard: (action.id === state.id)
+        zIndex: (action.id === state.id) ? 1 : 0
       });
 
     case 'RELEASE_CARD':
