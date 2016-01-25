@@ -17,15 +17,6 @@ let Actions = require('Actions');
 let {Dimensions, BaseStyles, Colors} = require('Constants');
 
 
-function value(cardState) {
-  if (!cardState) {
-    return 0;
-  } else {
-    return cardState.number + value(cardState.combinedFrom);
-  }
-}
-
-
 class MiniNumberCard extends React.Component {
 
   constructor(props, context) {
@@ -46,20 +37,8 @@ class MiniNumberCard extends React.Component {
     });
   }
 
-  isVisible() {
-    return !this.props.combinedTo;
-  }
-
-  value() {
-    return this.props.number.toString();
-  }
-
   panHandlers() {
-    if (!this.isVisible()) {
-      return {};
-    } else {
-      return this.responder.panHandlers;
-    };
+    return this.responder.panHandlers;
   }
 
   animateScale(scale) {
@@ -91,6 +70,10 @@ class MiniNumberCard extends React.Component {
       toValue: opacity,
       duration: 200
     });
+  }
+
+  componentDidMount() {
+
   }
 
   componentDidUpdate(prevProps) {
@@ -125,37 +108,16 @@ class MiniNumberCard extends React.Component {
     }
   }
 
-  onLayout() {
-    let id = this.props.id;
-    this.refs.card.measure((fx, fy, width, height, posX, posY) => {
-      Actions.registerCardPosition({id, posX, posY, height, width});
-    });
-  }
-
   onPanResponderGrant(evt, gestureState) {
-    if (!this.isVisible()) {
-      return;
-    }
-    //this.props.onPress(evt);
+
   }
 
   onPanResponderMove(evt, gestureState) {
-    if (!this.isVisible()) {
-      return;
-    }
-    let {dx, dy, moveX, moveY} = gestureState;
-    this.state.positionOffset.setValue({
-      x: dx,
-      y: dy
-    });
-    //this.props.onMove({moveX, moveY});
+
   }
 
   onPanResponderRelease(evt, gestureState) {
-    if (!this.isVisible()) {
-      return;
-    }
-    //this.props.onRelease(evt);
+
   }
 
   borderStyle() {
