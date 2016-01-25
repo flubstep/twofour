@@ -165,6 +165,7 @@ class NumberCard extends React.Component {
       <MiniNumberCardGrid
         lhs={this.props.number}
         rhs={this.props.combinedFrom.number}
+        style={this.props.style}
       />
     );
   }
@@ -186,7 +187,8 @@ class NumberCard extends React.Component {
               {scale: this.state.scale},
               ...this.state.positionOffset.getTranslateTransform()
             ]
-          }
+          },
+          this.props.style
         ]}
         onLayout={(evt) => this.onLayout(evt)}
         >

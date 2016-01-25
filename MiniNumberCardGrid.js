@@ -26,7 +26,7 @@ class MiniNumberCardGrid extends React.Component {
     let rhs = this.props.rhs;
 
     return (
-      <View style={[styles.cardGrid]}>
+      <View style={[styles.cardGrid, this.props.style]}>
         <View style={[styles.row]}>
           <MiniNumberCard top={true} left={true} number={rhs.add(lhs)} />
           <MiniNumberCard top={true} right={true} number={rhs.subtract(lhs)} />

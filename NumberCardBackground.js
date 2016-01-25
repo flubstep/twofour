@@ -24,7 +24,8 @@ class NumberCardBackground extends React.Component {
           BaseStyles.centerContent,
           styles.card,
           this.props.isHover ? styles.hover : null,
-          this.props.isDragging ? styles.dragging : null
+          this.props.isDragging ? styles.dragging : null,
+          this.props.style
         ]}
         ref="card"
         >
