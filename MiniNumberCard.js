@@ -25,7 +25,7 @@ class MiniNumberCard extends DraggableCard {
     super(props, context);
     this.state = {
       scale: new Animated.Value(0.0),
-      opacity: new Animated.Value(this.props.combinedTo ? 0.1 : 1.0),
+      opacity: new Animated.Value(1.0),
       positionOffset: new Animated.ValueXY(0, 0)
     };
   }
@@ -63,18 +63,15 @@ class MiniNumberCard extends DraggableCard {
   onGrab(evt, gestureState) {
     // let redux know so it can trigger a rerender with the grabbed
     // card on top
-    Actions.dragCard({id: this.props.id});
+    Actions.dragCard({id: this.props.card.id});
   }
 
   onMove(evt, gestureState) {
-    /*
     let {dx, dy, moveX, moveY} = gestureState;
     this.state.positionOffset.setValue({
       x: dx,
       y: dy
     });
-    */
-    Actions.chooseOperation({id: this.props.cardId, operation: this.props.operation});
   }
 
   onRelease(evt, gestureState) {
@@ -84,7 +81,7 @@ class MiniNumberCard extends DraggableCard {
   }
 
   onPress(evt, gestureState) {
-    Actions.chooseOperation({id: this.props.cardId, operation: this.props.operation});
+    Actions.embiggenMini({id: this.props.card.id, operation: this.props.operation});
   }
 
   onHoverOver(evt, gestureState) {
@@ -123,7 +120,7 @@ class MiniNumberCard extends DraggableCard {
           style={[BaseStyles.centerContent, styles.miniCard, this.borderStyle()]}
           ref="card"
           >
-          <Text style={[BaseStyles.largeText]}>{this.props.number.toString()}</Text>
+          <Text style={[BaseStyles.largeText]}>{this.props.card.evaluateNumber().toString()}</Text>
         </View>
       </Animated.View>
     );

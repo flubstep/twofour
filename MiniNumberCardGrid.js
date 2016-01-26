@@ -22,50 +22,45 @@ let MiniNumberCard = require('MiniNumberCard');
 class MiniNumberCardGrid extends React.Component {
 
   render() {
-    let lhs = this.props.lhs;
-    let rhs = this.props.rhs;
+    let combo = this.props.combo;
 
     return (
       <View style={[styles.cardGrid, this.props.style]}>
         <View style={[styles.row]}>
           <MiniNumberCard
-            dragKey={this.props.dragKey+'TopLeft'}
+            dragKey={combo.makeId('add')}
             responder={this.props.responder}
-            cardId={this.props.cardId}
+            card={combo.cloneWithSelectedOperator('add')}
+            operation='add'
             top={true}
             left={true}
-            number={lhs.add(rhs)}
-            operation='add'
-            />
+          />
           <MiniNumberCard
-            dragKey={this.props.dragKey+'TopRight'}
+            dragKey={combo.makeId('subtract')}
             responder={this.props.responder}
-            cardId={this.props.cardId}
+            card={combo.cloneWithSelectedOperator('subtract')}
+            operation='subtract'
             top={true}
             right={true}
-            number={lhs.subtract(rhs)}
-            operation='subtract'
-            />
+          />
         </View>
         <View style={[styles.row]}>
           <MiniNumberCard
-            dragKey={this.props.dragKey+'BottomLeft'}
+            dragKey={combo.makeId('multiply')}
             responder={this.props.responder}
-            cardId={this.props.cardId}
+            card={combo.cloneWithSelectedOperator('multiply')}
+            operation='multiply'
             bottom={true}
             left={true}
-            number={lhs.multiply(rhs)}
-            operation='multiply'
-            />
+          />
           <MiniNumberCard
-            dragKey={this.props.dragKey+'BottomRight'}
+            dragKey={combo.makeId('divide')}
             responder={this.props.responder}
-            cardId={this.props.cardId}
+            card={combo.cloneWithSelectedOperator('divide')}
+            operation='divide'
             bottom={true}
             right={true}
-            number={lhs.divide(rhs)}
-            operation='divide'
-            />
+          />
         </View>
       </View>
     );

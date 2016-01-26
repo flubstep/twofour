@@ -22,7 +22,7 @@ let NumberCard = require('NumberCard');
 let NumberCardBackground = require('NumberCardBackground');
 
 let Fractional = require('Fractional');
-let CardStack = require('CardStack');
+let CardCombo = require('CardCombo');
 let Puzzle = require('Puzzle');
 
 let {
@@ -44,7 +44,7 @@ class TwoFourScreen extends React.Component {
 
   componentDidMount() {
     Actions.subscribe((gameState) => {
-      this.setState(gameState);
+      this.setState(gameState.gameState);
     });
     this.createCards();
     this.setInterval(this.onTick, 1000);
@@ -62,16 +62,18 @@ class TwoFourScreen extends React.Component {
   renderCard(card, style) {
     return (
       <NumberCard
+        // TODO: grab key from cardcombo if needed...
         key={card.id}
         dragKey={card.id}
         responder={this.responder}
         style={style}
-        {...card}
+        card={card}
       />
     );
   }
 
   render() {
+    console.log(this.state);
     if (this.state.cards) {
       // absolute position the cards/backgrounds
       let positionFunc = (shiftY = false, shiftX = false) => {
@@ -102,9 +104,17 @@ class TwoFourScreen extends React.Component {
 
       // if we're currently dragging a card, we want to render it last so that
       // it always shows up on top of other cards (incidentally, this is the main
-      // reason we use absolute positioning)
-      cardData = sortBy(cardData, ([card, style]) => card.zIndex);
-      let cards = map(cardData, ([card, style]) => this.renderCard(card, style));
+      // reason we use absolute positioning.) We also account for dragging a child
+      // card here: our invariant is that the id of any child must begin with its
+      // parent's id (and only children begin with it) (TODO: this)
+      cardData = sortBy(cardData, ([card, style]) => {
+        if (card && this.state.mostRecentlyActiveCardId) {
+          return this.state.mostRecentlyActiveCardId.indexOf(card.id) === 0 ?
+            1 : 0;
+        }
+      });
+      let cards = map(cardData, ([card, style]) => card && this.renderCard(card, style));
+      console.log(cardData);
 
       return (
         <View

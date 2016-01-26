@@ -6,82 +6,88 @@
 
 let {uniqueId} = require('lodash');
 let Fractional = require('Fractional');
-let CardStack = require('CardStack');
+let CardCombo = require('CardCombo');
 
 let card = (state = {}, action) => {
 
   switch(action.type) {
-
-    case 'ADD_CARD':
+    case 'MAKE_CARD':
       return {
         id: action.id,
-        stack: new CardStack(action.id, new Fractional(action.number)),
-        combinedTo: null
+        number: new Fractional(action.number),
       }
 
-    case 'DRAG_CARD':
-      return Object.assign({}, state, {
-        // this has to live here rather than CardDragResponder
-        zIndex: (action.id === state.id) ? 1 : 0
-      });
-
     case 'COMBINE_CARDS':
-      if (action.from.id === state.id) {
-        return Object.assign({}, state, {
-          combinedTo: action.to,
-          zIndex: -1
-        });
-      } else if (action.to.id === state.id) {
-        return Object.assign({}, state, {
-          stack: state.stack.combineFrom(action.from.stack)
-        });
+      if (!state) { return null; }
+
+      if (action.from.id.indexOf(state.id) === 0) {
+        // we dragged either this card or a mini from this space
+        return null;
+      } else if (action.to.id.indexOf(state.id) === 0) {
+        return new CardCombo(action.from, action.to);
       } else {
         return state;
       }
 
-    case 'CHOOSE_OPERATION':
-      if (action.id === state.id) {
-        return Object.assign({}, state, {
-          stack: state.stack.chooseOperation(action.operation)
-        });
+    case 'EMBIGGEN_MINI':
+      if (!state) { return null; }
+
+      if (action.id.indexOf(state.id) === 0) {
+        return state.cloneWithSelectedOperator(action.operation);
       }
 
     default:
       return state;
-
   }
 }
 
 
-let cards = (state = [], action) => {
+let gameState = (state, action) => {
+  console.log(action);
+  if (typeof state === 'undefined') {
+    return {
+      cards: [], // 4 elements. contains the contents of each card _position_
+      mostRecentlyActiveCardId: null, // used by drag-n-drop rendering
+      cardsHistory: [] // history of cards, used for undo
+    };
+  }
+
+  var newState = {
+    cards: state.cards,
+    mostRecentlyActiveCardId: state.mostRecentlyActiveCardId,
+    cardsHistory: state.cardsHistory,
+  };
+
+  let saveToHistory = __ => {
+    newState.cardsHistory = [...state.cardsHistory, state.cards];
+  }
 
   switch(action.type) {
-
     case 'SET_CARDS':
-      return action.cards.map((number) => card(undefined, {
-        type: 'ADD_CARD',
+      newState.cards = action.cards.map((number) => card(undefined, {
+        type: 'MAKE_CARD',
         id: uniqueId(),
         number: number
       }));
-
-    case 'ADD_CARD':
-      return [...state, card(undefined, action)];
+      return newState;
 
     case 'DRAG_CARD':
-    case 'RELEASE_CARD':
-    case 'HOVER_CARD':
+      newState.mostRecentlyActiveCardId = action.id;
+      return newState;
+
     case 'COMBINE_CARDS':
-    case 'CHOOSE_OPERATION':
-      return state.map((cardState) => card(cardState, action));
+    case 'EMBIGGEN_MINI':
+      saveToHistory();
+      newState.cards = state.cards.map((cardState) => card(cardState, action));
+      return newState;
 
     default:
       return state;
   }
-
 };
 
 
 
 module.exports = {
-  cards
+  gameState 
 };

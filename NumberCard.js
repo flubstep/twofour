@@ -16,6 +16,7 @@ let {
 let Actions = require('Actions');
 let {Dimensions, BaseStyles, Colors} = require('Constants');
 
+let CardCombo = require('CardCombo');
 let DraggableCard = require('DraggableCard');
 let MiniNumberCardGrid = require('MiniNumberCardGrid');
 
@@ -26,13 +27,9 @@ class NumberCard extends DraggableCard {
     super(props, context);
     this.state = {
       scale: new Animated.Value(1.0),
-      opacity: new Animated.Value(this.props.combinedTo ? 0.1 : 1.0),
+      opacity: new Animated.Value(1.0),
       positionOffset: new Animated.ValueXY(0, 0)
     };
-  }
-
-  isVisible() {
-    return !this.props.combinedTo;
   }
 
   animateScale(scale) {
@@ -69,7 +66,7 @@ class NumberCard extends DraggableCard {
   onGrab(evt, gestureState) {
     // let redux know so it can trigger a rerender with the grabbed
     // card on top
-    Actions.dragCard({id: this.props.id});
+    Actions.dragCard({id: this.props.card.id});
   }
 
   onMove(evt, gestureState) {
@@ -90,11 +87,11 @@ class NumberCard extends DraggableCard {
 
   onRelease(evt, gestureState) {
     if (gestureState.hoveredCards.length > 0) {
-      this.props.responder.removeCard(this); // TODO: need inverse
+      // this.props.responder.removeCard(this); // TODO: need inverse
       this.props.responder.removeCard(gestureState.hoveredCards[0]);
       Actions.combineCards({
-        from: this.props,
-        to: gestureState.hoveredCards[0].props // assuming only one right now
+        from: this.props.card,
+        to: gestureState.hoveredCards[0].props.card // assuming only one right now
       });
 
       Animated.sequence([
@@ -109,26 +106,18 @@ class NumberCard extends DraggableCard {
     }
   }
 
-  renderSplitView(lhs, rhs) {
-    return (
-      <MiniNumberCardGrid
-        cardId={this.props.id}
-        dragKey={this.props.dragKey + 'Mini'}
-        responder={this.props.responder}
-        lhs={lhs}
-        rhs={rhs}
-        style={this.props.style}
-      />
-    );
-  }
-
   render() {
-    let number = this.props.stack.value();
-
-    if (number.multi) {
-      return this.renderSplitView(number.multi[0], number.multi[1]);
+    if (this.props.card instanceof CardCombo && !this.props.card.selected) {
+      return (
+        <MiniNumberCardGrid
+          combo={this.props.card}
+          dragKey={this.props.dragKey}
+          responder={this.props.responder}
+          style={this.props.style}
+        />
+      );
     }
-    else if (number.value) {
+    else {
       return (
         <Animated.View
           style={[
@@ -155,13 +144,11 @@ class NumberCard extends DraggableCard {
             ref="card"
             >
             <Text style={BaseStyles.hugeText}>
-              {this.props.combinedTo ? '' : number.value.toString()}
+              {this.props.card.number.toString()}
             </Text>
           </View>
         </Animated.View>
       );
-    } else {
-      throw new Error('Invalid number returned from stack');
     }
   }
 

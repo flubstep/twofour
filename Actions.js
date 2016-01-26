@@ -31,18 +31,14 @@ function createAction(type) {
 }
 
 let setCards = createAction('SET_CARDS');
-let hoverCard = createAction('HOVER_CARD');
 let dragCard = createAction('DRAG_CARD');
-let releaseCard = createAction('RELEASE_CARD');
 let combineCards = createAction('COMBINE_CARDS');
-let chooseOperation = createAction('CHOOSE_OPERATION');
+let embiggenMini = createAction('EMBIGGEN_MINI');
 
 module.exports = {
   subscribe,
   setCards,
-  hoverCard,
   dragCard,
-  releaseCard,
   combineCards,
-  chooseOperation
+  embiggenMini
 }
