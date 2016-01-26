@@ -11,7 +11,8 @@ let {
 
 let {
   union,
-  difference
+  difference,
+  filter
 } = require('lodash');
 
 
@@ -141,7 +142,6 @@ class CardDragResponder {
       return (inVertical && inHorizontal);
     });
   }
-
 }
 
 

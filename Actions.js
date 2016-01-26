@@ -31,7 +31,6 @@ function createAction(type) {
 }
 
 let setCards = createAction('SET_CARDS');
-let registerCardPosition = createAction('REGISTER_CARD_POSITION');
 let hoverCard = createAction('HOVER_CARD');
 let dragCard = createAction('DRAG_CARD');
 let releaseCard = createAction('RELEASE_CARD');
@@ -45,6 +44,5 @@ module.exports = {
   dragCard,
   releaseCard,
   combineCards,
-  registerCardPosition,
   chooseOperation
 }

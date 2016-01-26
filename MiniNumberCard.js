@@ -22,6 +22,7 @@ let DraggableCard = require('DraggableCard');
 class MiniNumberCard extends DraggableCard {
 
   constructor(props, context) {
+    props = Object.assign({}, props, { manualMeasure: true });
     super(props, context);
     this.state = {
       scale: new Animated.Value(0.0),
@@ -60,50 +61,38 @@ class MiniNumberCard extends DraggableCard {
     });
   }
 
+  onGrab(evt, gestureState) {
+    // let redux know so it can trigger a rerender with the grabbed
+    // card on top
+    Actions.dragCard({id: this.props.id});
+  }
+
   onMove(evt, gestureState) {
-    // TODO: if it's gone past a certain amount, then do a select and then drag
+    let {dx, dy, moveX, moveY} = gestureState;
+    this.state.positionOffset.setValue({
+      x: dx,
+      y: dy
+    });
   }
 
   onRelease(evt, gestureState) {
     Actions.chooseOperation({id: this.props.cardId, operation: this.props.operation});
+    Animated.parallel([
+      this.animatePosition(0)
+    ]).start();
+  }
+
+  onHoverOver(evt, gestureState) {
+    this.animateScale(1.1).start();
+  }
+
+  onHoverOut(evt, gestureState) {
+    this.animateScale(1.0).start();
   }
 
   componentDidMount() {
     this.state.scale.setValue(0.0);
-    this.animateScale(1.0).start();
-  }
-
-  componentDidUpdate(prevProps) {
-    // no hover -> hover
-    if (this.props.isHover && !prevProps.isHover) {
-      this.animateScale(1.1).start();
-    }
-    // hover -> no hover
-    else if (!this.props.isHover && prevProps.isHover) {
-      this.animateScale(1.0).start();
-    }
-    // start drag
-    else if (this.props.isDragging && !prevProps.isDragging) {
-      // no-op
-    }
-    // drag -> release, no hover
-    else if (!this.props.isDragging && prevProps.isDragging && !this.props.combinedTo) {
-      Animated.parallel([
-        this.animatePosition(0)
-      ]).start();
-    }
-    // drag -> release, combine
-    else if (!this.props.isDragging && prevProps.isDragging && this.props.combinedTo) {
-      this.props.responder.removeCard(this); // TODO: need inverse
-      Animated.sequence([
-        Animated.parallel([
-          this.animateScale(1.0),
-          this.animateOpacity(0.0),
-          this.animatePosition(this.props.combinedTo)
-        ]),
-        this.animatePosition(0) // TODO: actually move the object backwards in z-index
-      ]).start()
-    }
+    this.animateScale(1.0).start(__ => this.onMeasure());
   }
 
   borderStyle() {

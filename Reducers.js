@@ -16,35 +16,14 @@ let card = (state = {}, action) => {
       return {
         id: action.id,
         stack: new CardStack(action.id, new Fractional(action.number)),
-        isDragging: false,
-        isHover: false,
         combinedTo: null
       }
 
     case 'DRAG_CARD':
       return Object.assign({}, state, {
-        isDragging: (action.id === state.id),
+        // this has to live here rather than CardDragResponder
         zIndex: (action.id === state.id) ? 1 : 0
       });
-
-    case 'RELEASE_CARD':
-      return Object.assign({}, state, {
-        isDragging: false,
-        isHover: false,
-      });
-
-    case 'HOVER_CARD':
-      if (action.id === state.id && !state.combinedTo) {
-        return Object.assign({}, state, {
-          isHover: true
-        });
-      } else if (state.isHover) {
-        return Object.assign({}, state, {
-          isHover: false
-        });
-      } else {
-        return state;
-      }
 
     case 'COMBINE_CARDS':
       if (action.from.id === state.id) {
@@ -88,7 +67,6 @@ let cards = (state = [], action) => {
     case 'ADD_CARD':
       return [...state, card(undefined, action)];
 
-    case 'REGISTER_CARD_POSITION':
     case 'DRAG_CARD':
     case 'RELEASE_CARD':
     case 'HOVER_CARD':

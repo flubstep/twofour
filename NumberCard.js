@@ -66,38 +66,9 @@ class NumberCard extends DraggableCard {
     });
   }
 
-  componentDidUpdate(prevProps) {
-    // no hover -> hover
-    if (this.props.isHover && !prevProps.isHover) {
-      this.animateScale(1.1).start();
-    }
-    // hover -> no hover
-    else if (!this.props.isHover && prevProps.isHover) {
-      this.animateScale(1.0).start();
-    }
-    // start drag
-    else if (this.props.isDragging && !prevProps.isDragging) {
-      // no-op
-    }
-    // drag -> release, no hover
-    else if (!this.props.isDragging && prevProps.isDragging && !this.props.combinedTo) {
-      Animated.parallel([
-        this.animatePosition(0)
-      ]).start();
-    }
-    // drag -> release, combine
-    else if (!this.props.isDragging && prevProps.isDragging && this.props.combinedTo) {
-      this.props.responder.removeCard(this); // TODO: need inverse
-      Animated.sequence([
-        Animated.parallel([
-          this.animateScale(1.0),
-          this.animateOpacity(0.0)
-        ])
-      ]).start()
-    }
-  }
-
   onGrab(evt, gestureState) {
+    // let redux know so it can trigger a rerender with the grabbed
+    // card on top
     Actions.dragCard({id: this.props.id});
   }
 
@@ -110,21 +81,32 @@ class NumberCard extends DraggableCard {
   }
 
   onHoverOver(evt, gestureState) {
-    Actions.hoverCard({id: this.props.id});
+    this.animateScale(1.1).start();
   }
 
   onHoverOut(evt, gestureState) {
-    Actions.hoverCard({id: null});
+    this.animateScale(1.0).start();
   }
 
   onRelease(evt, gestureState) {
     if (gestureState.hoveredCards.length > 0) {
+      this.props.responder.removeCard(this); // TODO: need inverse
+      this.props.responder.removeCard(gestureState.hoveredCards[0]);
       Actions.combineCards({
         from: this.props,
         to: gestureState.hoveredCards[0].props // assuming only one right now
       });
+
+      Animated.sequence([
+        Animated.parallel([
+          this.animateOpacity(0.0)
+        ])
+      ]).start()
+    } else {
+      Animated.parallel([
+        this.animatePosition(0)
+      ]).start();
     }
-    Actions.releaseCard({id: this.props.id});
   }
 
   renderSplitView(lhs, rhs) {

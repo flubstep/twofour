@@ -27,6 +27,14 @@ class DraggableCard extends React.Component {
   }
 
   onLayout() {
+    // set manualMeasure to true when you're playing an animation that might
+    // screw up measure
+    if (!this.props.manualMeasure) {
+      this.onMeasure();
+    }
+  }
+
+  onMeasure() {
     this.refs.card.measure((fx, fy, width, height, posX, posY) => {
       this.props.responder.addCard(this, posX, posX+height, posY, posY+width);
     });
