@@ -22,7 +22,6 @@ let DraggableCard = require('DraggableCard');
 class MiniNumberCard extends DraggableCard {
 
   constructor(props, context) {
-    props = Object.assign({}, props, { manualMeasure: true });
     super(props, context);
     this.state = {
       scale: new Animated.Value(0.0),
@@ -92,7 +91,7 @@ class MiniNumberCard extends DraggableCard {
 
   componentDidMount() {
     this.state.scale.setValue(0.0);
-    this.animateScale(1.0).start(__ => this.onMeasure());
+    this.animateScale(1.0).start(__ => this.onLayout());
   }
 
   borderStyle() {
