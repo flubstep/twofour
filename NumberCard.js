@@ -104,10 +104,8 @@ class NumberCard extends DraggableCard {
       Animated.sequence([
         Animated.parallel([
           this.animateScale(1.0),
-          this.animateOpacity(0.0),
-          this.animatePosition(this.props.combinedTo)
-        ]),
-        this.animatePosition(0) // TODO: actually move the object backwards in z-index
+          this.animateOpacity(0.0)
+        ])
       ]).start()
     }
   }
@@ -145,6 +143,7 @@ class NumberCard extends DraggableCard {
   renderSplitView() {
     return (
       <MiniNumberCardGrid
+        dragKey={this.props.dragKey + 'Mini'}
         responder={this.props.responder}
         lhs={this.props.number}
         rhs={this.props.combinedFrom.number}

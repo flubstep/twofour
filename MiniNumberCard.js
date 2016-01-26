@@ -16,27 +16,24 @@ let {
 let Actions = require('Actions');
 let {Dimensions, BaseStyles, Colors} = require('Constants');
 
+let DraggableCard = require('DraggableCard');
 
-class MiniNumberCard extends React.Component {
+
+class MiniNumberCard extends DraggableCard {
 
   constructor(props, context) {
     super(props, context);
     this.state = {
-      scale: new Animated.Value(1.0),
+      scale: new Animated.Value(0.0),
       opacity: new Animated.Value(this.props.combinedTo ? 0.1 : 1.0),
       positionOffset: new Animated.ValueXY(0, 0)
     };
   }
 
-  panHandlers() {
-    return this.responder.panHandlers;
-  }
-
   animateScale(scale) {
-    return Animated.spring(this.state.scale, {
+    return Animated.timing(this.state.scale, {
       toValue: scale,
-      tension: 150,
-      friction: 10
+      duration: 200
     });
   }
 
@@ -61,6 +58,19 @@ class MiniNumberCard extends React.Component {
       toValue: opacity,
       duration: 200
     });
+  }
+
+  onMove(evt, gestureState) {
+    // TODO: if it's gone past a certain amount, then do a select and then drag
+  }
+
+  onRelease(evt, gestureState) {
+    // TODO: replace the current equation with this value
+  }
+
+  componentDidMount() {
+    this.state.scale.setValue(0.0);
+    this.animateScale(1.0).start();
   }
 
   componentDidUpdate(prevProps) {
@@ -106,11 +116,23 @@ class MiniNumberCard extends React.Component {
 
   render() {
     return (
-      <View
-        style={[BaseStyles.centerContent, styles.miniCard, this.borderStyle()]}
+      <Animated.View style={[
+          {
+            transform: [
+              {scale: this.state.scale},
+              ...this.state.positionOffset.getTranslateTransform()
+            ]
+          }
+        ]}
         >
-        <Text style={[BaseStyles.largeText]}>{this.props.number.toString()}</Text>
-      </View>
+        <View
+          style={[BaseStyles.centerContent, styles.miniCard, this.borderStyle()]}
+          onLayout={(evt) => this.onLayout(evt)}
+          ref="card"
+          >
+          <Text style={[BaseStyles.largeText]}>{this.props.number.toString()}</Text>
+        </View>
+      </Animated.View>
     );
   }
 

@@ -17,24 +17,8 @@ let card = (state = {}, action) => {
         number: new Fractional(action.number),
         isDragging: false,
         isHover: false,
-        posX: 0,
-        posY: 0,
-        height: 0,
-        width: 0,
         combinedTo: null,
         combinedFrom: null
-      }
-
-    case 'REGISTER_CARD_POSITION':
-      if (action.id === state.id) {
-        return Object.assign({}, state, {
-          posX: action.posX,
-          posY: action.posY,
-          height: action.height,
-          width: action.width,
-        });
-      } else {
-        return state;
       }
 
     case 'DRAG_CARD':
