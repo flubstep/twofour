@@ -53,6 +53,9 @@ class CardDragResponder {
   }
 
   onCardMove(card, evt, gestureState) {
+    if (this.isPress(gestureState)) {
+      return;
+    }
     let fn = (card.onMove || nop).bind(card);
     fn(evt, this.updatedGestureState(gestureState));
   }
@@ -68,8 +71,15 @@ class CardDragResponder {
   }
 
   onCardRelease(card, evt, gestureState) {
-    let fn = (card.onRelease || nop).bind(card);
+    let fn = this.isPress(gestureState) ?
+      (card.onPress || nop).bind(card) :
+      (card.onRelease || nop).bind(card);
     fn(evt, this.updatedGestureState(gestureState));
+  }
+
+  isPress(gestureState) {
+    return Math.abs(gestureState.dx) < 10 &&
+      Math.abs(gestureState.dy) < 10;
   }
 
   onPanResponderGrant(evt, gestureState) {

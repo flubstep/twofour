@@ -75,10 +75,13 @@ class MiniNumberCard extends DraggableCard {
   }
 
   onRelease(evt, gestureState) {
-    Actions.chooseOperation({id: this.props.cardId, operation: this.props.operation});
     Animated.parallel([
       this.animatePosition(0)
     ]).start();
+  }
+
+  onPress(evt, gestureState) {
+    Actions.chooseOperation({id: this.props.cardId, operation: this.props.operation});
   }
 
   onHoverOver(evt, gestureState) {

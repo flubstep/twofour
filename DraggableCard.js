@@ -37,6 +37,7 @@ class DraggableCard extends React.Component {
   onHoverOver: () => {}
   onHoverOut: () => {}
   onRelease: () => {}
+  onPress: () => {}
 
 }
 
