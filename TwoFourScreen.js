@@ -16,6 +16,7 @@ let TimerMixin = require('react-timer-mixin');
 
 let {Dimensions, BaseStyles, Colors} = require('Constants');
 let Actions = require('Actions');
+let CardDragResponder = require('CardDragResponder');
 
 let NumberCard = require('NumberCard');
 let NumberCardBackground = require('NumberCardBackground');
@@ -29,11 +30,11 @@ class TwoFourScreen extends React.Component {
       cards: null,
       iterations: 0
     };
+    this.responder = CardDragResponder.create({});
   }
 
   componentDidMount() {
     Actions.subscribe((gameState) => {
-      console.log('game state', gameState);
       this.setState(gameState);
     });
     this.createCards();
@@ -41,45 +42,6 @@ class TwoFourScreen extends React.Component {
   }
 
   onTick() {
-
-  }
-
-  combineCards(cardFrom, cardInto) {
-    console.log("combining cards ", cardFrom, cardInto);
-    Actions.combineCards({
-      from: cardFrom,
-      to: cardInto
-    });
-  }
-
-  onCardMove(gestureState, card) {
-    this.calculateHover(gestureState.moveX, gestureState.moveY);
-  }
-
-  onCardRelease(gestureState, card) {
-    let hoveredCards = this.state.cards.filter((card) => card.isHover);
-    if (hoveredCards.length > 0) {
-      this.combineCards(card, hoveredCards[0]);
-    }
-    Actions.releaseCard({id: card.id});
-  }
-
-  onCardPress(gestureState, card) {
-    Actions.dragCard({id: card.id});
-  }
-
-  calculateHover(hoverX, hoverY) {
-    // Not very functional implementation, but need to do the Action
-    // dispatch here otherwise the performance crawls to a halt.
-    this.state.cards.map((card) => {
-      let inVertical = (card.posX < hoverX) && (hoverX < card.posX + card.height);
-      let inHorizontal = (card.posY < hoverY) && (hoverY < card.posY + card.width);
-      if (!card.isHover && !card.isDragging && !card.combinedTo && inVertical && inHorizontal) {
-        Actions.hoverCard({id: card.id});
-      } else if (card.isHover && !(inVertical && inHorizontal)) {
-        Actions.hoverCard({id: null});
-      }
-    });
 
   }
 
@@ -91,9 +53,8 @@ class TwoFourScreen extends React.Component {
   renderCard(card) {
     return (
       <NumberCard
-        onPress={(gestureState) => this.onCardPress(gestureState, card)}
-        onMove={(gestureState) => this.onCardMove(gestureState, card)}
-        onRelease={(gestureState) => this.onCardRelease(gestureState, card)}
+        dragKey={card.id}
+        responder={this.responder}
         {...card}
       />
     );
@@ -102,7 +63,10 @@ class TwoFourScreen extends React.Component {
   render() {
     if (this.state.cards) {
       return (
-        <View style={{backgroundColor: 'white'}}>
+        <View
+          style={{backgroundColor: 'white'}}
+          {...this.responder.panHandlers}
+          >
           <View style={styles.container}>
             <View style={[styles.row, BaseStyles.transparentBackground]}>
               <NumberCardBackground />

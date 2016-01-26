@@ -36,7 +36,6 @@ function gcd(a, b) {
 class Fractional {
 
   constructor(numerator, denominator = 1) {
-    console.log('create', numerator, denominator);
     let divisor = gcd(numerator, denominator);
     this.numerator = numerator / divisor;
     this.denominator = denominator / divisor;

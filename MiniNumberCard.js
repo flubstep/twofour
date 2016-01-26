@@ -26,15 +26,6 @@ class MiniNumberCard extends React.Component {
       opacity: new Animated.Value(this.props.combinedTo ? 0.1 : 1.0),
       positionOffset: new Animated.ValueXY(0, 0)
     };
-    this.responder = PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onMoveShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onPanResponderGrant: (evt, gestureState) => this.onPanResponderGrant(evt, gestureState),
-      onPanResponderMove: (evt, gestureState) => this.onPanResponderMove(evt, gestureState),
-      onPanResponderRelease: (evt, gestureState) => this.onPanResponderRelease(evt, gestureState)
-    });
   }
 
   panHandlers() {
@@ -72,10 +63,6 @@ class MiniNumberCard extends React.Component {
     });
   }
 
-  componentDidMount() {
-
-  }
-
   componentDidUpdate(prevProps) {
     // no hover -> hover
     if (this.props.isHover && !prevProps.isHover) {
@@ -97,6 +84,7 @@ class MiniNumberCard extends React.Component {
     }
     // drag -> release, combine
     else if (!this.props.isDragging && prevProps.isDragging && this.props.combinedTo) {
+      this.props.responder.removeCard(this); // TODO: need inverse
       Animated.sequence([
         Animated.parallel([
           this.animateScale(1.0),
@@ -106,18 +94,6 @@ class MiniNumberCard extends React.Component {
         this.animatePosition(0) // TODO: actually move the object backwards in z-index
       ]).start()
     }
-  }
-
-  onPanResponderGrant(evt, gestureState) {
-
-  }
-
-  onPanResponderMove(evt, gestureState) {
-
-  }
-
-  onPanResponderRelease(evt, gestureState) {
-
   }
 
   borderStyle() {
@@ -132,7 +108,6 @@ class MiniNumberCard extends React.Component {
     return (
       <View
         style={[BaseStyles.centerContent, styles.miniCard, this.borderStyle()]}
-        {...this.panHandlers()}
         >
         <Text style={[BaseStyles.largeText]}>{this.props.number.toString()}</Text>
       </View>

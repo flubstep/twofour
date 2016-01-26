@@ -16,6 +16,7 @@ let {
 let Actions = require('Actions');
 let {Dimensions, BaseStyles, Colors} = require('Constants');
 
+let DraggableCard = require('DraggableCard');
 let MiniNumberCardGrid = require('MiniNumberCardGrid');
 
 
@@ -28,7 +29,7 @@ function value(cardState) {
 }
 
 
-class NumberCard extends React.Component {
+class NumberCard extends DraggableCard {
 
   constructor(props, context) {
     super(props, context);
@@ -37,15 +38,6 @@ class NumberCard extends React.Component {
       opacity: new Animated.Value(this.props.combinedTo ? 0.1 : 1.0),
       positionOffset: new Animated.ValueXY(0, 0)
     };
-    this.responder = PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onMoveShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onPanResponderGrant: (evt, gestureState) => this.onPanResponderGrant(evt, gestureState),
-      onPanResponderMove: (evt, gestureState) => this.onPanResponderMove(evt, gestureState),
-      onPanResponderRelease: (evt, gestureState) => this.onPanResponderRelease(evt, gestureState)
-    });
   }
 
   isVisible() {
@@ -54,14 +46,6 @@ class NumberCard extends React.Component {
 
   value() {
     return this.props.number.toString();
-  }
-
-  panHandlers() {
-    if (!this.isVisible()) {
-      return {};
-    } else {
-      return this.responder.panHandlers;
-    };
   }
 
   animateScale(scale) {
@@ -116,6 +100,7 @@ class NumberCard extends React.Component {
     }
     // drag -> release, combine
     else if (!this.props.isDragging && prevProps.isDragging && this.props.combinedTo) {
+      this.props.responder.removeCard(this); // TODO: need inverse
       Animated.sequence([
         Animated.parallel([
           this.animateScale(1.0),
@@ -127,42 +112,40 @@ class NumberCard extends React.Component {
     }
   }
 
-  onLayout() {
-    let id = this.props.id;
-    this.refs.card.measure((fx, fy, width, height, posX, posY) => {
-      Actions.registerCardPosition({id, posX, posY, height, width});
-    });
+  onGrab(evt, gestureState) {
+    Actions.dragCard({id: this.props.id});
   }
 
-  onPanResponderGrant(evt, gestureState) {
-    if (!this.isVisible()) {
-      return;
-    }
-    this.props.onPress(evt);
-  }
-
-  onPanResponderMove(evt, gestureState) {
-    if (!this.isVisible()) {
-      return;
-    }
+  onMove(evt, gestureState) {
     let {dx, dy, moveX, moveY} = gestureState;
     this.state.positionOffset.setValue({
       x: dx,
       y: dy
     });
-    this.props.onMove({moveX, moveY});
   }
 
-  onPanResponderRelease(evt, gestureState) {
-    if (!this.isVisible()) {
-      return;
+  onHoverOver(evt, gestureState) {
+    Actions.hoverCard({id: this.props.id});
+  }
+
+  onHoverOut(evt, gestureState) {
+    Actions.hoverCard({id: null});
+  }
+
+  onRelease(evt, gestureState) {
+    if (gestureState.hoveredCards.length > 0) {
+      Actions.combineCards({
+        from: this.props,
+        to: gestureState.hoveredCards[0].props // assuming only one right now
+      });
     }
-    this.props.onRelease(evt);
+    Actions.releaseCard({id: this.props.id});
   }
 
   renderSplitView() {
     return (
       <MiniNumberCardGrid
+        responder={this.props.responder}
         lhs={this.props.number}
         rhs={this.props.combinedFrom.number}
       />
@@ -175,7 +158,6 @@ class NumberCard extends React.Component {
     }
     return (
       <Animated.View
-        {...this.panHandlers()}
         style={[
           BaseStyles.transparentBackground,
           {
