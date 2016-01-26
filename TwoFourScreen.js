@@ -24,7 +24,11 @@ let NumberCardBackground = require('NumberCardBackground');
 let Fractional = require('Fractional');
 let CardStack = require('CardStack');
 
-let { sortBy, map } = require('lodash');
+let {
+  sortBy,
+  map,
+  random
+} = require('lodash');
 
 class TwoFourScreen extends React.Component {
 
@@ -50,7 +54,7 @@ class TwoFourScreen extends React.Component {
   }
 
   createCards() {
-    let cards = [4, 5, 6, 7];
+    let cards = [1, 2, 3, 4].map(() => random(2, 8));
     Actions.setCards({cards});
   }
 

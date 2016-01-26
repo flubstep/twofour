@@ -82,7 +82,7 @@ class CardStack {
       stack = stack.slice(2);
     }
     if (stack.length == 1) {
-      let lhsResolved = stack[0][1].value();
+      let lhsResolved = stack[0][1].value(); // TODO: this is also super ugly
       return { multi: [lhsResolved.value, val] }
     } else {
       return { value: val }
