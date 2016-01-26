@@ -49,7 +49,8 @@ let card = (state = {}, action) => {
     case 'COMBINE_CARDS':
       if (action.from.id === state.id) {
         return Object.assign({}, state, {
-          combinedTo: action.to
+          combinedTo: action.to,
+          zIndex: -1
         });
       } else if (action.to.id === state.id) {
         return Object.assign({}, state, {
@@ -92,6 +93,7 @@ let cards = (state = [], action) => {
     case 'RELEASE_CARD':
     case 'HOVER_CARD':
     case 'COMBINE_CARDS':
+    case 'CHOOSE_OPERATION':
       return state.map((cardState) => card(cardState, action));
 
     default:

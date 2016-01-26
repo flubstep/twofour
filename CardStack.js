@@ -62,7 +62,7 @@ class CardStack {
       var [stackList, operationList] = stack.slice(0, 2);
       var otherStack = stackList[1];
       var operation = operationList[1];
-      var lhs = otherStack.value();
+      var lhs = otherStack.value().value; // TODO: this is super ugly
       switch (operation) {
         case 'add':
           val = lhs.add(val);

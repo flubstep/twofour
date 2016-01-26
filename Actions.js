@@ -36,6 +36,7 @@ let hoverCard = createAction('HOVER_CARD');
 let dragCard = createAction('DRAG_CARD');
 let releaseCard = createAction('RELEASE_CARD');
 let combineCards = createAction('COMBINE_CARDS');
+let chooseOperation = createAction('CHOOSE_OPERATION');
 
 module.exports = {
   subscribe,
@@ -44,5 +45,6 @@ module.exports = {
   dragCard,
   releaseCard,
   combineCards,
-  registerCardPosition
+  registerCardPosition,
+  chooseOperation
 }

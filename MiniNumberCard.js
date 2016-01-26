@@ -65,7 +65,7 @@ class MiniNumberCard extends DraggableCard {
   }
 
   onRelease(evt, gestureState) {
-    // TODO: replace the current equation with this value
+    Actions.chooseOperation({id: this.props.cardId, operation: this.props.operation});
   }
 
   componentDidMount() {

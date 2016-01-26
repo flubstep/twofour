@@ -130,6 +130,7 @@ class NumberCard extends DraggableCard {
   renderSplitView(lhs, rhs) {
     return (
       <MiniNumberCardGrid
+        cardId={this.props.id}
         dragKey={this.props.dragKey + 'Mini'}
         responder={this.props.responder}
         lhs={lhs}
