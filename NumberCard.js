@@ -20,15 +20,6 @@ let DraggableCard = require('DraggableCard');
 let MiniNumberCardGrid = require('MiniNumberCardGrid');
 
 
-function value(cardState) {
-  if (!cardState) {
-    return 0;
-  } else {
-    return cardState.number + value(cardState.combinedFrom);
-  }
-}
-
-
 class NumberCard extends DraggableCard {
 
   constructor(props, context) {
@@ -42,10 +33,6 @@ class NumberCard extends DraggableCard {
 
   isVisible() {
     return !this.props.combinedTo;
-  }
-
-  value() {
-    return this.props.number.toString();
   }
 
   animateScale(scale) {
@@ -140,53 +127,59 @@ class NumberCard extends DraggableCard {
     Actions.releaseCard({id: this.props.id});
   }
 
-  renderSplitView() {
+  renderSplitView(lhs, rhs) {
     return (
       <MiniNumberCardGrid
         dragKey={this.props.dragKey + 'Mini'}
         responder={this.props.responder}
-        lhs={this.props.number}
-        rhs={this.props.combinedFrom.number}
+        lhs={lhs}
+        rhs={rhs}
         style={this.props.style}
       />
     );
   }
 
   render() {
-    if (this.props.combinedFrom) {
-      return this.renderSplitView();
+    let number = this.props.stack.value();
+
+    if (number.multi) {
+      return this.renderSplitView(number.multi[0], number.multi[1]);
     }
-    return (
-      <Animated.View
-        style={[
-          BaseStyles.transparentBackground,
-          {
-            opacity: this.state.opacity
-          },
-          {
-            transform: [
-              {scale: this.state.scale},
-              ...this.state.positionOffset.getTranslateTransform()
-            ]
-          },
-          this.props.style
-        ]}
-        onLayout={(evt) => this.onLayout(evt)}
-        >
-        <View style={[
-            BaseStyles.centerContent,
-            styles.card,
-            this.props.isHover ? styles.hover : null,
-            this.props.isDragging ? styles.dragging : null
+    else if (number.value) {
+      return (
+        <Animated.View
+          style={[
+            BaseStyles.transparentBackground,
+            {
+              opacity: this.state.opacity
+            },
+            {
+              transform: [
+                {scale: this.state.scale},
+                ...this.state.positionOffset.getTranslateTransform()
+              ]
+            },
+            this.props.style
           ]}
-          ref="card"
+          onLayout={(evt) => this.onLayout(evt)}
           >
-          <Text style={BaseStyles.hugeText}>
-            {this.props.combinedTo ? '' : this.value()}
-          </Text>
-        </View>
-      </Animated.View>
-    );
+          <View style={[
+              BaseStyles.centerContent,
+              styles.card,
+              this.props.isHover ? styles.hover : null,
+              this.props.isDragging ? styles.dragging : null
+            ]}
+            ref="card"
+            >
+            <Text style={BaseStyles.hugeText}>
+              {this.props.combinedTo ? '' : number.value.toString()}
+            </Text>
+          </View>
+        </Animated.View>
+      );
+    } else {
+      throw new Error('Invalid number returned from stack');
+    }
   }
 
 }

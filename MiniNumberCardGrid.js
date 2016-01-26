@@ -33,14 +33,14 @@ class MiniNumberCardGrid extends React.Component {
             responder={this.props.responder}
             top={true}
             left={true}
-            number={rhs.add(lhs)}
+            number={lhs.add(rhs)}
             />
           <MiniNumberCard
             dragKey={this.props.dragKey+'TopRight'}
             responder={this.props.responder}
             top={true}
             right={true}
-            number={rhs.subtract(lhs)}
+            number={lhs.subtract(rhs)}
             />
         </View>
         <View style={[styles.row]}>
@@ -49,14 +49,14 @@ class MiniNumberCardGrid extends React.Component {
             responder={this.props.responder}
             bottom={true}
             left={true}
-            number={rhs.multiply(lhs)}
+            number={lhs.multiply(rhs)}
             />
           <MiniNumberCard
             dragKey={this.props.dragKey+'BottomRight'}
             responder={this.props.responder}
             bottom={true}
             right={true}
-            number={rhs.divide(lhs)}
+            number={lhs.divide(rhs)}
             />
         </View>
       </View>

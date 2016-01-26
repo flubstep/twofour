@@ -21,6 +21,9 @@ let CardDragResponder = require('CardDragResponder');
 let NumberCard = require('NumberCard');
 let NumberCardBackground = require('NumberCardBackground');
 
+let Fractional = require('Fractional');
+let CardStack = require('CardStack');
+
 let { sortBy, map } = require('lodash');
 
 class TwoFourScreen extends React.Component {

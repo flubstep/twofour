@@ -6,6 +6,7 @@
 
 let {uniqueId} = require('lodash');
 let Fractional = require('Fractional');
+let CardStack = require('CardStack');
 
 let card = (state = {}, action) => {
 
@@ -14,11 +15,10 @@ let card = (state = {}, action) => {
     case 'ADD_CARD':
       return {
         id: action.id,
-        number: new Fractional(action.number),
+        stack: new CardStack(action.id, new Fractional(action.number)),
         isDragging: false,
         isHover: false,
-        combinedTo: null,
-        combinedFrom: null
+        combinedTo: null
       }
 
     case 'DRAG_CARD':
@@ -53,10 +53,17 @@ let card = (state = {}, action) => {
         });
       } else if (action.to.id === state.id) {
         return Object.assign({}, state, {
-          combinedFrom: action.from
+          stack: state.stack.combineFrom(action.from.stack)
         });
       } else {
         return state;
+      }
+
+    case 'CHOOSE_OPERATION':
+      if (action.id === state.id) {
+        return Object.assign({}, state, {
+          stack: state.stack.chooseOperation(action.operation)
+        });
       }
 
     default:
