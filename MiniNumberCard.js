@@ -67,11 +67,14 @@ class MiniNumberCard extends DraggableCard {
   }
 
   onMove(evt, gestureState) {
+    /*
     let {dx, dy, moveX, moveY} = gestureState;
     this.state.positionOffset.setValue({
       x: dx,
       y: dy
     });
+    */
+    Actions.chooseOperation({id: this.props.cardId, operation: this.props.operation});
   }
 
   onRelease(evt, gestureState) {
@@ -118,7 +121,6 @@ class MiniNumberCard extends DraggableCard {
         >
         <View
           style={[BaseStyles.centerContent, styles.miniCard, this.borderStyle()]}
-          onLayout={(evt) => this.onLayout(evt)}
           ref="card"
           >
           <Text style={[BaseStyles.largeText]}>{this.props.number.toString()}</Text>

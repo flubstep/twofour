@@ -21,7 +21,8 @@ class CardStack {
   // Action equivalent to dragging 'cardStack' into this card
   combineFrom(cardStack) {
     if (last(this.stack)[0] == 'CardStack') {
-      throw new Error('Attempting to stack a card without choosing operation first.');
+      return this;
+      // throw new Error('Attempting to stack a card without choosing operation first.');
     }
     this.stack.push(['CardStack', cardStack]);
     return this;
@@ -30,7 +31,8 @@ class CardStack {
   // Action equivalent to selecting an 'operation' after dragging a card into it
   chooseOperation(operation) {
     if (last(this.stack)[0] != 'CardStack') {
-      throw new Error('Cannot push an operation without a previous card first.');
+      return this;
+      // throw new Error('Cannot push an operation without a previous card first.');
     }
     this.stack.push(['Operation', operation]);
     return this;

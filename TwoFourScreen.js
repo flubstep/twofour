@@ -23,6 +23,7 @@ let NumberCardBackground = require('NumberCardBackground');
 
 let Fractional = require('Fractional');
 let CardStack = require('CardStack');
+let Puzzle = require('Puzzle');
 
 let {
   sortBy,
@@ -54,7 +55,7 @@ class TwoFourScreen extends React.Component {
   }
 
   createCards() {
-    let cards = [1, 2, 3, 4].map(() => random(2, 8));
+    let cards = Puzzle.createPuzzle();
     Actions.setCards({cards});
   }
 

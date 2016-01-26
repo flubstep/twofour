@@ -4,11 +4,6 @@
 
 'use strict';
 
-let React = require('react-native');
-let {
-  Dimensions
-} = React;
-
 let {
   min,
   max
