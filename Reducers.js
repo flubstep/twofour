@@ -39,7 +39,8 @@ let card = (state = {}, action) => {
 
     case 'DRAG_CARD':
       return Object.assign({}, state, {
-        isDragging: (action.id === state.id)
+        isDragging: (action.id === state.id),
+        zIndex: (action.id === state.id) ? 1 : 0
       });
 
     case 'RELEASE_CARD':

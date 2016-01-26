@@ -21,6 +21,7 @@ let CardDragResponder = require('CardDragResponder');
 let NumberCard = require('NumberCard');
 let NumberCardBackground = require('NumberCardBackground');
 
+let { sortBy, map } = require('lodash');
 
 class TwoFourScreen extends React.Component {
 
@@ -50,11 +51,13 @@ class TwoFourScreen extends React.Component {
     Actions.setCards({cards});
   }
 
-  renderCard(card) {
+  renderCard(card, style) {
     return (
       <NumberCard
+        key={card.id}
         dragKey={card.id}
         responder={this.responder}
+        style={style}
         {...card}
       />
     );
@@ -62,30 +65,47 @@ class TwoFourScreen extends React.Component {
 
   render() {
     if (this.state.cards) {
+      // absolute position the cards/backgrounds
+      let positionFunc = (shiftY = false, shiftX = false) => {
+        let cardsTop = (Dimensions.windowHeight - Dimensions.cardSide * 2 - Dimensions.baseMargin) / 2;
+        let cardsLeft = (Dimensions.windowWidth - Dimensions.cardSide * 2 - Dimensions.baseMargin) / 2;
+        let horizOffset = Dimensions.cardSide + Dimensions.baseMargin;
+        let vertOffset = Dimensions.cardSide + Dimensions.baseMargin;
+        return {
+          position: 'absolute',
+          top: cardsTop + (shiftY ? vertOffset : 0),
+          left: cardsLeft + (shiftX ? horizOffset : 0)
+        };
+      }
+
+      let backgrounds = [
+        <NumberCardBackground key={'backgroundTopLeft'} style={positionFunc(0, 0)} />,
+        <NumberCardBackground key={'backgroundTopRight'} style={positionFunc(0, 1)} />,
+        <NumberCardBackground key={'backgroundBottomLeft'} style={positionFunc(1, 0)} />,
+        <NumberCardBackground key={'backgroundBottomRight'} style={positionFunc(1, 1)} />
+      ];
+
+      let cardData = [
+        [this.state.cards[0], positionFunc(0, 0)],
+        [this.state.cards[1], positionFunc(0, 1)],
+        [this.state.cards[2], positionFunc(1, 0)],
+        [this.state.cards[3], positionFunc(1, 1)]
+      ];
+
+      // if we're currently dragging a card, we want to render it last so that
+      // it always shows up on top of other cards (incidentally, this is the main
+      // reason we use absolute positioning)
+      cardData = sortBy(cardData, data => data[0].zIndex);
+      let cards = map(cardData, data => this.renderCard(data[0], data[1]));
+
       return (
         <View
           style={{backgroundColor: 'white'}}
           {...this.responder.panHandlers}
           >
           <View style={styles.container}>
-            <View style={[styles.row, BaseStyles.transparentBackground]}>
-              <NumberCardBackground />
-              <NumberCardBackground />
-            </View>
-            <View style={[styles.row, BaseStyles.transparentBackground]}>
-              <NumberCardBackground />
-              <NumberCardBackground />
-            </View>
-          </View>
-          <View style={styles.container}>
-            <View style={[styles.row, BaseStyles.transparentBackground]}>
-              {this.renderCard(this.state.cards[0])}
-              {this.renderCard(this.state.cards[1])}
-            </View>
-            <View style={[styles.row, BaseStyles.transparentBackground]}>
-              {this.renderCard(this.state.cards[2])}
-              {this.renderCard(this.state.cards[3])}
-            </View>
+            {backgrounds}
+            {cards}
           </View>
         </View>
       );
@@ -103,25 +123,10 @@ class TwoFourScreen extends React.Component {
 let styles = StyleSheet.create({
 
   container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
     height: Dimensions.windowHeight,
     width: Dimensions.windowWidth,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: Colors.transparent
   },
-
-  row: {
-    width: Dimensions.windowWidth - Dimensions.baseMargin * 2,
-    height: Dimensions.cardHeight,
-    marginBottom: Dimensions.baseMargin,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  }
 
 });
 

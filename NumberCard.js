@@ -148,6 +148,7 @@ class NumberCard extends DraggableCard {
         responder={this.props.responder}
         lhs={this.props.number}
         rhs={this.props.combinedFrom.number}
+        style={this.props.style}
       />
     );
   }
@@ -168,7 +169,8 @@ class NumberCard extends DraggableCard {
               {scale: this.state.scale},
               ...this.state.positionOffset.getTranslateTransform()
             ]
-          }
+          },
+          this.props.style
         ]}
         onLayout={(evt) => this.onLayout(evt)}
         >
@@ -209,24 +211,5 @@ let styles = StyleSheet.create({
   }
 });
 
-let styles2 = StyleSheet.create({
-
-  miniCard: {
-    height: Dimensions.miniCardSide,
-    width: Dimensions.miniCardSide,
-    backgroundColor: Colors.midBackground,
-    shadowOffset: {left: 0, bottom: 0},
-    shadowOpacity: 0.4,
-    shadowRadius: 2
-  },
-  row: {
-    height: Dimensions.miniCardSide,
-    width: Dimensions.cardSide,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  }
-
-});
 
 module.exports = NumberCard;
