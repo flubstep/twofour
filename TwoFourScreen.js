@@ -95,12 +95,12 @@ class TwoFourScreen extends React.Component {
       // if we're currently dragging a card, we want to render it last so that
       // it always shows up on top of other cards (incidentally, this is the main
       // reason we use absolute positioning)
-      cardData = sortBy(cardData, data => data[0].zIndex);
-      let cards = map(cardData, data => this.renderCard(data[0], data[1]));
+      cardData = sortBy(cardData, ([card, style]) => card.zIndex);
+      let cards = map(cardData, ([card, style]) => this.renderCard(card, style));
 
       return (
         <View
-          style={{backgroundColor: 'white'}}
+          style={{backgroundColor: Colors.white}}
           {...this.responder.panHandlers}
           >
           <View style={styles.container}>
